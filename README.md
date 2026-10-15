@@ -194,4 +194,3 @@ tests/e2e/        Playwright flow at 360px
 - **No streak** is shown; the spec made it optional.
 - **"(English only)" example.** The "Not an official Kenpath product" line is intentionally left
   untranslated so the fallback tag can be seen in Kannada mode.
-- **Kannada strings** need proofreading by a native speaker (`TODO(user)` in `src/i18n/kn.ts`).

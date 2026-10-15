@@ -2,7 +2,7 @@ import type { Dictionary } from './en';
 
 /**
  * Kannada strings. Missing keys fall back to English with an "(English only)" tag.
- * TODO(user): proofread. Strings are kept short and simple on purpose.
+ * Proofread by a native speaker. Strings are kept short and simple on purpose.
  */
 export const kn: Partial<Dictionary> = {
   'app.name': 'ಲೋಕಃ ಟಾಸ್ಕ್‌ಗಳು',
