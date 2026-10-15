@@ -47,6 +47,13 @@ export function validateDescription(
   return null;
 }
 
+/** Append a task-specific note to a generic reason, per language. */
+function withNote(reason: LocalText, note: LocalText | undefined): LocalText {
+  if (!note) return reason;
+  const kn = reason.kn && note.kn ? `${reason.kn} ${note.kn}` : undefined;
+  return { en: `${reason.en} ${note.en}`, ...(kn ? { kn } : {}) };
+}
+
 /**
  * What the demo reviewer is told before deciding. The reviewer panel still
  * makes the final call; nothing here approves a task on its own.
@@ -70,10 +77,13 @@ export function suggestReview(task: Task, answer: Answer): ReviewSuggestion {
             en: 'The transcript matches the audio, but the answer said it does not. Listen again.',
             kn: 'ಬರಹವು ಧ್ವನಿಗೆ ಹೊಂದುತ್ತದೆ, ಆದರೆ ಉತ್ತರ ಹೊಂದುವುದಿಲ್ಲ ಎಂದಿದೆ. ಮತ್ತೆ ಕೇಳಿ.',
           }
-        : {
-            en: 'The transcript has a mistake, but the answer said it matches. Listen again and compare each word.',
-            kn: 'ಬರಹದಲ್ಲಿ ತಪ್ಪಿದೆ, ಆದರೆ ಉತ್ತರ ಹೊಂದುತ್ತದೆ ಎಂದಿದೆ. ಮತ್ತೆ ಕೇಳಿ, ಪ್ರತಿ ಪದ ಹೋಲಿಸಿ.',
-          },
+        : withNote(
+            {
+              en: 'The transcript has a mistake, but the answer said it matches. Listen again and compare each word.',
+              kn: 'ಬರಹದಲ್ಲಿ ತಪ್ಪಿದೆ, ಆದರೆ ಉತ್ತರ ಹೊಂದುತ್ತದೆ ಎಂದಿದೆ. ಮತ್ತೆ ಕೇಳಿ, ಪ್ರತಿ ಪದ ಹೋಲಿಸಿ.',
+            },
+            task.mismatchNote,
+          ),
     };
   }
   return {

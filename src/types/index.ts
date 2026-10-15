@@ -38,6 +38,8 @@ export interface ListenVerifyTask extends TaskBase {
   transcript: string;
   /** Answer key: does the transcript match what is spoken in the audio? */
   transcriptMatchesAudio: boolean;
+  /** For mismatched transcripts: what is actually wrong, shown with a revision suggestion. */
+  mismatchNote?: LocalText;
 }
 
 export interface DescribeImageTask extends TaskBase {

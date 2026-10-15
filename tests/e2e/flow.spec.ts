@@ -32,14 +32,14 @@ test('browse → start → submit → pending → demo approve → earnings → 
   await expectNoHorizontalScroll(page);
 
   // Reward and ₹/hour are visible before starting.
-  const card = page.getByRole('link', { name: /Verify an English request/ });
-  await expect(card).toContainText('₹4.00');
+  const card = page.getByRole('link', { name: /Verify a Kannada bus time/ });
+  await expect(card).toContainText('₹5.00');
   await expect(card).toContainText('per hour');
   await expect(card).toContainText('Demo data');
   await card.click();
 
   // Start
-  await expect(page.getByRole('heading', { level: 1, name: 'Verify an English request' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Verify a Kannada bus time' })).toBeVisible();
   await page.getByRole('button', { name: 'Start task' }).click();
   await expect(page.getByText('In progress').first()).toBeVisible();
   await expectNoHorizontalScroll(page);
@@ -60,7 +60,7 @@ test('browse → start → submit → pending → demo approve → earnings → 
   // Pending is not counted as approved.
   await page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Earnings' }).click();
   await expect(page.getByTestId('approved-total')).toContainText('₹0.00');
-  await expect(page.getByTestId('pending-total')).toContainText('₹4.00');
+  await expect(page.getByTestId('pending-total')).toContainText('₹5.00');
   await page.goBack();
 
   // Demo approve
@@ -70,18 +70,18 @@ test('browse → start → submit → pending → demo approve → earnings → 
 
   // Earnings update
   await page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Earnings' }).click();
-  await expect(page.getByTestId('approved-total')).toContainText('₹4.00');
+  await expect(page.getByTestId('approved-total')).toContainText('₹5.00');
   await expect(page.getByTestId('pending-total')).toContainText('₹0.00');
-  await expect(page.getByRole('link', { name: 'Verify an English request' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Verify a Kannada bus time' })).toBeVisible();
   await expectNoHorizontalScroll(page);
 
   // Reload persists
   await page.reload();
-  await expect(page.getByTestId('approved-total')).toContainText('₹4.00');
-  await expect(page.getByRole('link', { name: 'Verify an English request' })).toHaveCount(1);
+  await expect(page.getByTestId('approved-total')).toContainText('₹5.00');
+  await expect(page.getByRole('link', { name: 'Verify a Kannada bus time' })).toHaveCount(1);
   const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('lokah:v1') ?? '{}'));
   expect(stored.schemaVersion).toBe(1);
-  expect(stored.submissions['lv-en-02'].status).toBe('approved');
+  expect(stored.submissions['lv-kn-02'].status).toBe('approved');
 
   await page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'History' }).click();
   await expect(page.getByText('Approved').first()).toBeVisible();

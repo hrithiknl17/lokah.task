@@ -12,7 +12,8 @@ A mobile-first prototype of a platform where people complete small paid language
 
 - **Two task types**
   - **Listen & Verify** — play a short clip and say whether the transcript matches. Kannada and
-    English clips; one transcript is deliberately wrong, so "Doesn't match" is the right answer.
+    English clips; one transcript (Kannada bus time) is deliberately wrong, so "Doesn't match" is
+    the right answer.
   - **Describe an Image** — write 40–500 characters in your own words.
 - **Clear rewards before you start** — every task card shows the reward, an estimated ₹/hour and
   the time it takes, all labelled "Demo data".
@@ -54,16 +55,18 @@ submit for those tasks.
 
 | File | What it should contain |
 | --- | --- |
-| `public/audio/lv-kn-01.mp3` | Kannada: "ನಮಸ್ಕಾರ, ನೀವು ಹೇಗಿದ್ದೀರಿ?" |
-| `public/audio/lv-kn-02.mp3` | Kannada: "ಬಸ್ ನಿಲ್ದಾಣ ಎಲ್ಲಿದೆ?" |
-| `public/audio/lv-en-01.mp3` | English: "The market opens at nine in the morning." |
-| `public/audio/lv-en-02.mp3` | English: "Please close the **window** before it rains." (transcript says "door" on purpose) |
+| `public/audio/kn-1.ogg` ✅ | Kannada: "ನಾಳೆ ಬೆಳಿಗ್ಗೆ ಮಾರುಕಟ್ಟೆಗೆ ಹೋಗುತ್ತೇನೆ" — transcript matches |
+| `public/audio/kn-2.ogg` ✅ | Kannada: "ಬಸ್ **ಹತ್ತು** ಗಂಟೆಗೆ ಬರುತ್ತದೆ" — transcript says ಒಂಬತ್ತು (nine) on purpose, so "Doesn't match" is correct |
+| `public/audio/en-1.ogg` ✅ | English: "The train leaves at six in the evening." — transcript matches |
+| `public/audio/en-2.ogg` ✅ | English: "Please bring two kilos of rice." — transcript matches |
 | `public/images/di-01.jpg` | A market vegetable stall (640×480) |
 | `public/images/di-02.jpg` | A busy street (640×480) |
 | `public/images/di-03.jpg` | A home kitchen (640×480) |
 
-Keep clips short and compressed. If you change what a clip says, update the transcript in
-`src/data/tasks.ts` (look for `TODO(user)`). Update alt text there if images differ.
+Audio is Ogg Opus (✅ = supplied and checked: loads and decodes in Chromium). Ogg Opus plays in
+Chrome, Firefox and Edge; older Safari/iOS versions may not support it, so ship an MP3 too if you
+need to support those. If you change what a clip says, update the transcript in
+`src/data/tasks.ts`. Update alt text there if images differ (`TODO(user)`).
 
 ## How data is stored
 

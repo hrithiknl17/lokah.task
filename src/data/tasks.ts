@@ -19,40 +19,45 @@ export const TASKS: readonly Task[] = [
   {
     id: 'lv-kn-01',
     kind: 'listen_verify',
-    title: { en: 'Verify a Kannada greeting', kn: 'ಕನ್ನಡ ಶುಭಾಶಯ ಪರಿಶೀಲಿಸಿ' },
+    title: { en: 'Verify a Kannada plan', kn: 'ಕನ್ನಡ ಯೋಜನೆ ವಾಕ್ಯ ಪರಿಶೀಲಿಸಿ' },
     instructions: LISTEN_INSTRUCTIONS,
     rewardPaise: 400,
     estMinutes: 1,
-    audioSrc: '/audio/lv-kn-01.mp3',
+    audioSrc: '/audio/kn-1.ogg',
     audioLanguage: 'kn',
-    // TODO(user): fill exact transcript — audio should say this sentence.
-    transcript: 'ನಮಸ್ಕಾರ, ನೀವು ಹೇಗಿದ್ದೀರಿ?',
+    // Spoken: "ನಾಳೆ ಬೆಳಿಗ್ಗೆ ಮಾರುಕಟ್ಟೆಗೆ ಹೋಗುತ್ತೇನೆ"
+    transcript: 'ನಾಳೆ ಬೆಳಿಗ್ಗೆ ಮಾರುಕಟ್ಟೆಗೆ ಹೋಗುತ್ತೇನೆ',
     transcriptMatchesAudio: true,
   },
   {
     id: 'lv-kn-02',
     kind: 'listen_verify',
-    title: { en: 'Verify a Kannada question', kn: 'ಕನ್ನಡ ಪ್ರಶ್ನೆ ಪರಿಶೀಲಿಸಿ' },
+    title: { en: 'Verify a Kannada bus time', kn: 'ಕನ್ನಡ ಬಸ್ ಸಮಯ ಪರಿಶೀಲಿಸಿ' },
     instructions: LISTEN_INSTRUCTIONS,
     rewardPaise: 500,
     estMinutes: 1.5,
-    audioSrc: '/audio/lv-kn-02.mp3',
+    audioSrc: '/audio/kn-2.ogg',
     audioLanguage: 'kn',
-    // TODO(user): fill exact transcript — audio should say this sentence.
-    transcript: 'ಬಸ್ ನಿಲ್ದಾಣ ಎಲ್ಲಿದೆ?',
-    transcriptMatchesAudio: true,
+    // DELIBERATELY WRONG transcript: the correct answer is "Doesn't match".
+    // Spoken: "ಬಸ್ ಹತ್ತು ಗಂಟೆಗೆ ಬರುತ್ತದೆ" (ten), transcript says ಒಂಬತ್ತು (nine).
+    transcript: 'ಬಸ್ ಒಂಬತ್ತು ಗಂಟೆಗೆ ಬರುತ್ತದೆ',
+    transcriptMatchesAudio: false,
+    mismatchNote: {
+      en: 'The speaker said ಹತ್ತು (ten), not ಒಂಬತ್ತು (nine).',
+      kn: 'ಮಾತನಾಡಿದವರು ಹತ್ತು ಎಂದು ಹೇಳಿದರು, ಒಂಬತ್ತು ಅಲ್ಲ.',
+    },
   },
   {
     id: 'lv-en-01',
     kind: 'listen_verify',
-    title: { en: 'Verify an English sentence', kn: 'ಇಂಗ್ಲಿಷ್ ವಾಕ್ಯ ಪರಿಶೀಲಿಸಿ' },
+    title: { en: 'Verify a train time', kn: 'ರೈಲು ಸಮಯ ಪರಿಶೀಲಿಸಿ' },
     instructions: LISTEN_INSTRUCTIONS,
     rewardPaise: 400,
     estMinutes: 1,
-    audioSrc: '/audio/lv-en-01.mp3',
+    audioSrc: '/audio/en-1.ogg',
     audioLanguage: 'en',
-    // TODO(user): fill exact transcript — audio should say this sentence.
-    transcript: 'The market opens at nine in the morning.',
+    // Spoken: "The train leaves at six in the evening."
+    transcript: 'The train leaves at six in the evening.',
     transcriptMatchesAudio: true,
   },
   {
@@ -62,13 +67,11 @@ export const TASKS: readonly Task[] = [
     instructions: LISTEN_INSTRUCTIONS,
     rewardPaise: 400,
     estMinutes: 1,
-    audioSrc: '/audio/lv-en-02.mp3',
+    audioSrc: '/audio/en-2.ogg',
     audioLanguage: 'en',
-    // DELIBERATELY WRONG transcript: the correct answer is "Doesn't match".
-    // TODO(user): fill exact transcript — audio should say
-    // "Please close the window before it rains." (window, not door).
-    transcript: 'Please close the door before it rains.',
-    transcriptMatchesAudio: false,
+    // Spoken: "Please bring two kilos of rice."
+    transcript: 'Please bring two kilos of rice.',
+    transcriptMatchesAudio: true,
   },
   {
     id: 'di-01',

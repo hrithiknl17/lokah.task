@@ -1,41 +1,58 @@
 import { describe, expect, it } from 'vitest';
-import { getTask } from '../data/tasks';
-import type { DescribeImageTask, ListenVerifyTask } from '../types';
+import { TASKS, getTask } from '../data/tasks';
+import type { DescribeImageTask, ListenAnswer, ListenVerifyTask } from '../types';
 import { DESCRIPTION_MAX, suggestReview, validateDescription } from './review';
 
-const matchingTask = getTask('lv-kn-01') as ListenVerifyTask;
-const wrongTranscriptTask = getTask('lv-en-02') as ListenVerifyTask;
 const imageTask = getTask('di-01') as DescribeImageTask;
 
-describe('Listen & Verify reviewer suggestion', () => {
-  it('test data includes a deliberately wrong transcript', () => {
-    expect(matchingTask.transcriptMatchesAudio).toBe(true);
-    expect(wrongTranscriptTask.transcriptMatchesAudio).toBe(false);
+function listenTask(id: string): ListenVerifyTask {
+  const task = getTask(id);
+  if (task?.kind !== 'listen_verify') throw new Error(`${id} is not a Listen & Verify task`);
+  return task;
+}
+
+// Answer key, as recorded in the supplied clips.
+const ANSWER_KEY: [id: string, audio: string, correct: ListenAnswer, wrong: ListenAnswer][] = [
+  ['lv-kn-01', '/audio/kn-1.ogg', 'matches', 'doesnt_match'],
+  ['lv-kn-02', '/audio/kn-2.ogg', 'doesnt_match', 'matches'],
+  ['lv-en-01', '/audio/en-1.ogg', 'matches', 'doesnt_match'],
+  ['lv-en-02', '/audio/en-2.ogg', 'matches', 'doesnt_match'],
+];
+
+describe('Listen & Verify answer key', () => {
+  it('covers every Listen & Verify task, with kn-2 as the only mismatch', () => {
+    const listenIds = TASKS.filter((t) => t.kind === 'listen_verify').map((t) => t.id);
+    expect(listenIds.sort()).toEqual(ANSWER_KEY.map(([id]) => id).sort());
+    const mismatches = ANSWER_KEY.filter(([id]) => !listenTask(id).transcriptMatchesAudio);
+    expect(mismatches.map(([id]) => id)).toEqual(['lv-kn-02']);
   });
 
-  it('suggests approve when the answer agrees with the key', () => {
-    expect(suggestReview(matchingTask, { kind: 'listen_verify', choice: 'matches' }).outcome).toBe(
-      'approve',
-    );
-    expect(
-      suggestReview(wrongTranscriptTask, { kind: 'listen_verify', choice: 'doesnt_match' }).outcome,
-    ).toBe('approve');
+  it.each(ANSWER_KEY)('%s uses %s', (id, audio) => {
+    expect(listenTask(id).audioSrc).toBe(audio);
   });
 
-  it('suggests needs revision with an explanation when the answer is wrong', () => {
-    const wrongOnMatch = suggestReview(matchingTask, {
-      kind: 'listen_verify',
-      choice: 'doesnt_match',
-    });
-    expect(wrongOnMatch.outcome).toBe('needs_revision');
-    expect(wrongOnMatch.reason.en.length).toBeGreaterThan(0);
+  it.each(ANSWER_KEY)('%s: correct answer "%s" → suggest approve', (id, _audio, correct) => {
+    const suggestion = suggestReview(listenTask(id), { kind: 'listen_verify', choice: correct });
+    expect(suggestion.outcome).toBe('approve');
+  });
 
-    const wrongOnMismatch = suggestReview(wrongTranscriptTask, {
+  it.each(ANSWER_KEY)(
+    '%s: wrong answer → suggest needs revision with an explanation',
+    (id, _audio, _correct, wrong) => {
+      const suggestion = suggestReview(listenTask(id), { kind: 'listen_verify', choice: wrong });
+      expect(suggestion.outcome).toBe('needs_revision');
+      expect(suggestion.reason.en.length).toBeGreaterThan(0);
+      expect(suggestion.reason.kn?.length).toBeGreaterThan(0);
+    },
+  );
+
+  it('kn-2 explains what was actually said when someone answers "Matches"', () => {
+    const suggestion = suggestReview(listenTask('lv-kn-02'), {
       kind: 'listen_verify',
       choice: 'matches',
     });
-    expect(wrongOnMismatch.outcome).toBe('needs_revision');
-    expect(wrongOnMismatch.reason.en).toMatch(/mistake/);
+    expect(suggestion.reason.en).toContain('The speaker said ಹತ್ತು (ten), not ಒಂಬತ್ತು (nine).');
+    expect(suggestion.reason.kn).toContain('ಹತ್ತು');
   });
 
   it('never auto-suggests approval for image descriptions', () => {
