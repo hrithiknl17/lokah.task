@@ -7,3 +7,5 @@ playwright-report
 
 # Original, full-size source images (resized copies live in public/images)
 assets-src/
+
+.vercel
