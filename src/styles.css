@@ -197,14 +197,13 @@ a {
   padding: 6px 2px;
   color: var(--text-muted);
   text-decoration: none;
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
   line-height: 1.2;
   text-align: center;
 }
 
 .bottom-nav__label {
   max-width: 100%;
-  overflow-wrap: anywhere;
 }
 
 .bottom-nav a[aria-current='page'] {
@@ -693,10 +692,16 @@ textarea[aria-invalid='true'] {
   border: 2px solid var(--bad);
 }
 
+/* Stacked, so long labels (e.g. Kannada) never squeeze or overflow. */
 .choice-group {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: 8px;
+}
+
+.choice span {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .choice {
