@@ -145,6 +145,10 @@ export const kn: Partial<Dictionary> = {
   'notFound.link': 'ಮುಖಪುಟಕ್ಕೆ ಹೋಗಿ',
 
   'home.heroTitle': 'ನಿಮ್ಮ ಕೊಡುಗೆ ಮುಖ್ಯ.',
+  'home.welcome': 'ಸ್ವಾಗತ',
+  'home.welcomeBack': 'ಮತ್ತೆ ಸ್ವಾಗತ, {name}',
+  'home.total': 'ಒಟ್ಟು ಅನುಮೋದಿತ',
+  'home.pendingLine': 'ಪರಿಶೀಲನೆ ಬಾಕಿ: {amount}. ಅನುಮೋದನೆಯವರೆಗೆ ಇದು ಗಳಿಕೆ ಅಲ್ಲ.',
   'home.rewards': 'ನಿಮ್ಮ ಬಹುಮಾನಗಳು',
   'home.picked': 'ನಿಮಗಾಗಿ ಆಯ್ದ ಕೆಲಸಗಳು',
   'home.viewAll': 'ಎಲ್ಲಾ ನೋಡಿ',

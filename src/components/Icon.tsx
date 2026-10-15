@@ -18,6 +18,8 @@ const PATHS = {
   chevronLeft: 'M15 5l-7 7 7 7',
   chevronRight: 'M9 5l7 7-7 7',
   arrowRight: 'M5 12h14m-5-5 5 5-5 5',
+  arrowUpRight: 'M7 17 17 7M9 7h8v8',
+  bell: 'M6 16v-5a6 6 0 1 1 12 0v5l1.5 2h-15L6 16Zm4 4a2 2 0 0 0 4 0',
   clock: 'M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm0-12v4l3 2',
   headphones:
     'M4 15v-3a8 8 0 0 1 16 0v3M4 15a2 2 0 0 1 2-2h1v7H6a2 2 0 0 1-2-2v-3Zm16 0a2 2 0 0 0-2-2h-1v7h1a2 2 0 0 0 2-2v-3Z',

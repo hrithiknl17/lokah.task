@@ -11,7 +11,13 @@
   --bg: #f5f6f1;
   --surface: #ffffff;
   --surface-soft: #f0f2ec;
-  --hero-bg: #eef2ea;
+  --panel: #e9f0eb;
+  --mint-bright: #6fe3b8;
+  --mint-bright-hover: #5ad6a8;
+  --on-mint: #0f3b2a;
+  --ink: #10261c;
+  /* Paise in the big total: still >= 3:1 on --panel as large text. */
+  --ink-muted: #6b8679;
   --mint: #e3f1e8;
   --mint-strong: #bfe0cb;
   --primary: #1d5a3e;
@@ -606,23 +612,171 @@ a {
 
 /* ---------- Home ---------- */
 
-.home-top {
+/* Welcome block: centred, airy, like the homepage reference. */
+.welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding-bottom: 8px;
+  text-align: center;
+}
+
+.welcome__bar {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  align-self: stretch;
+  margin-bottom: 18px;
+}
+
+.welcome__mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 999px;
+  background: var(--surface-soft);
+}
+
+.round-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 52px;
+  height: 52px;
+  border-radius: 999px;
+  background: var(--mint-bright);
+  color: var(--on-mint);
+  font-size: 1.125rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.round-link:hover {
+  background: var(--mint-bright-hover);
+}
+
+.round-link--muted {
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--border);
+  color: var(--primary);
+}
+
+.round-link--muted:hover {
+  background: var(--surface-soft);
+}
+
+.welcome__kicker {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 1.125rem;
+}
+
+.welcome__title {
+  margin: 0;
+  color: var(--ink);
+  font-size: clamp(2.25rem, 12vw, 3.25rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+}
+
+.welcome__lede {
+  margin: 4px 0 18px;
+  color: var(--text-muted);
+  font-size: 1.0625rem;
+}
+
+.button--mint {
+  min-height: 60px;
+  padding: 14px 34px;
+  border-radius: 999px;
+  background: var(--mint-bright);
+  color: var(--on-mint);
+  font-size: 1.125rem;
+  box-shadow: 0 6px 18px rgb(40 170 120 / 0.22);
+}
+
+.button--mint:hover {
+  background: var(--mint-bright-hover);
+}
+
+/*
+ * Earnings panel with a concave top edge: a page-coloured ellipse sits over
+ * the panel's top, so the panel appears to curve up at both sides.
+ */
+.earnings-panel {
+  position: relative;
+  overflow: hidden;
+  margin: 0 calc(-1 * var(--gutter));
+  padding: 96px calc(var(--gutter) + 8px) 28px;
+  border-radius: 0 0 var(--r-card) var(--r-card);
+  background: var(--panel);
+}
+
+.earnings-panel::before {
+  content: '';
+  position: absolute;
+  top: -150px;
+  left: 12%;
+  width: 76%;
+  height: 230px;
+  border-radius: 50%;
+  background: var(--bg);
+  pointer-events: none;
+}
+
+.earnings-panel > * {
+  position: relative;
+}
+
+.earnings-panel__head {
+  display: flex;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
 }
 
-.brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
+.earnings-panel__label {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 1rem;
+  font-weight: 500;
 }
 
-.brand__name {
-  font-size: 1.1875rem;
-  font-weight: 650;
+.earnings-panel__sub {
+  margin: 2px 0 0;
+  color: var(--text);
+  font-size: 1.375rem;
+  font-weight: 500;
   letter-spacing: -0.01em;
+}
+
+.earnings-panel__amount {
+  margin: 18px 0 6px;
+  font-size: clamp(3rem, 17vw, 4.75rem);
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  letter-spacing: -0.045em;
+  overflow-wrap: anywhere;
+}
+
+.earnings-panel__whole {
+  color: var(--ink);
+}
+
+.earnings-panel__fraction {
+  color: var(--ink-muted);
+}
+
+.earnings-panel__pending {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.9375rem;
 }
 
 .avatar {
@@ -649,65 +803,6 @@ a {
   height: 88px;
   font-size: 2rem;
   box-shadow: 0 0 0 6px var(--surface);
-}
-
-.hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 42%;
-  overflow: hidden;
-  border-radius: var(--r-card);
-  background: var(--hero-bg);
-}
-
-.hero__text {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 24px 12px 22px 20px;
-}
-
-.hero__text h1 {
-  margin: 0;
-  color: var(--primary);
-  font-size: clamp(1.375rem, 6vw, 2.25rem);
-  line-height: 1.12;
-}
-
-@media (max-width: 374px) {
-  .hero {
-    grid-template-columns: minmax(0, 1fr) 34%;
-  }
-
-  .hero__text {
-    padding-left: 16px;
-  }
-}
-
-.hero__hello {
-  margin: 0;
-  color: var(--text-muted);
-  font-weight: 500;
-}
-
-.hero__lede {
-  margin: 0 0 6px;
-  color: var(--text-muted);
-  font-size: 0.9375rem;
-}
-
-.hero .button {
-  min-height: var(--touch);
-  padding: 10px 16px;
-  font-size: 0.9375rem;
-}
-
-.hero__img {
-  width: 100%;
-  height: 100%;
-  min-height: 240px;
-  object-fit: cover;
-  object-position: 72% center;
 }
 
 .stat-pair {
@@ -1624,12 +1719,9 @@ textarea[aria-invalid='true'] {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .hero__text {
-    padding: 40px 24px 36px 36px;
-  }
-
-  .hero__img {
-    min-height: 320px;
+  .earnings-panel {
+    margin: 0;
+    border-radius: var(--r-card);
   }
 }
 

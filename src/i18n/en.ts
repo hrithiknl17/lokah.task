@@ -145,6 +145,10 @@ export const en = {
   'notFound.link': 'Go to Home',
 
   'home.heroTitle': 'Your contribution matters.',
+  'home.welcome': 'Welcome to',
+  'home.welcomeBack': 'Welcome back, {name}',
+  'home.total': 'Approved total',
+  'home.pendingLine': 'Pending review: {amount}. Not earned until approved.',
   'home.rewards': 'Your rewards',
   'home.picked': 'Tasks picked for you',
   'home.viewAll': 'View all',

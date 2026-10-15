@@ -12,6 +12,17 @@ export function formatPaise(paise: number): string {
   return inr.format(paise / 100);
 }
 
+/** Split a formatted amount into the rupee part and the paise part, for two-tone display. */
+export function splitPaise(paise: number): { whole: string; fraction: string } {
+  let whole = '';
+  let fraction = '';
+  for (const part of inr.formatToParts(paise / 100)) {
+    if (part.type === 'decimal' || part.type === 'fraction') fraction += part.value;
+    else whole += part.value;
+  }
+  return { whole, fraction };
+}
+
 /** Whole rupees, for estimates such as ₹/hour where paise imply false precision. */
 export function formatPaiseRounded(paise: number): string {
   return inrWhole.format(Math.round(paise / 100));
