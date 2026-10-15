@@ -88,6 +88,51 @@ test('browse → start → submit → pending → demo approve → earnings → 
   await expectNoHorizontalScroll(page);
 });
 
+async function sourceList(page: Page) {
+  return page
+    .locator('audio source')
+    .evaluateAll((els) => els.map((el) => `${el.getAttribute('src')} ${el.getAttribute('type')}`));
+}
+
+test('real clips: player lists ogg first with mp3 fallback, no preload', async ({ page }) => {
+  // No route stubs: this uses the files in public/audio.
+  await page.goto('/#/tasks/lv-kn-01');
+  await page.getByRole('button', { name: 'Start task' }).click();
+  const audio = page.locator('audio');
+  await expect(audio).toHaveCount(1);
+  await expect(audio).toHaveAttribute('preload', 'none');
+  await expect(audio).not.toHaveAttribute('autoplay');
+  expect(await sourceList(page)).toEqual([
+    '/audio/kn-1.ogg audio/ogg; codecs=opus',
+    '/audio/kn-1.mp3 audio/mpeg',
+  ]);
+  await expect(page.getByRole('button', { name: 'Submit for review' })).toBeEnabled();
+
+  // Each real file decodes in the browser.
+  for (const src of ['/audio/kn-1.ogg', '/audio/kn-1.mp3']) {
+    const duration = await page.evaluate(
+      (src) =>
+        new Promise<number>((resolve, reject) => {
+          const probe = new Audio();
+          probe.onloadedmetadata = () => resolve(probe.duration);
+          probe.onerror = () => reject(new Error(`cannot decode ${src}`));
+          probe.src = src;
+        }),
+      src,
+    );
+    expect(duration).toBeGreaterThan(1);
+  }
+});
+
+test('falls back to mp3 when the ogg file is missing', async ({ page }) => {
+  await page.route('**/audio/*.ogg', (route) => route.fulfill({ status: 404, body: '' }));
+  await page.goto('/#/tasks/lv-en-01');
+  await page.getByRole('button', { name: 'Start task' }).click();
+  await expect(page.locator('audio')).toHaveCount(1);
+  expect(await sourceList(page)).toEqual(['/audio/en-1.mp3 audio/mpeg']);
+  await expect(page.getByRole('button', { name: 'Submit for review' })).toBeEnabled();
+});
+
 test('missing audio shows a message and disables submit', async ({ page }) => {
   await page.route('**/audio/**', (route) => route.fulfill({ status: 404, body: '' }));
   await page.goto('/#/tasks/lv-kn-01');

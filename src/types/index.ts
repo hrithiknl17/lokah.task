@@ -30,9 +30,16 @@ interface TaskBase {
   estMinutes: number;
 }
 
+export interface AudioSource {
+  src: string;
+  /** MIME type, so the browser can skip formats it cannot play without downloading them. */
+  type: string;
+}
+
 export interface ListenVerifyTask extends TaskBase {
   kind: 'listen_verify';
-  audioSrc: string;
+  /** In preference order; the browser plays the first one it supports. */
+  audioSources: readonly AudioSource[];
   audioLanguage: Lang;
   /** Transcript shown to the user. */
   transcript: string;

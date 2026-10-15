@@ -12,12 +12,17 @@ function listenTask(id: string): ListenVerifyTask {
 }
 
 // Answer key, as recorded in the supplied clips.
-const ANSWER_KEY: [id: string, audio: string, correct: ListenAnswer, wrong: ListenAnswer][] = [
-  ['lv-kn-01', '/audio/kn-1.ogg', 'matches', 'doesnt_match'],
-  ['lv-kn-02', '/audio/kn-2.ogg', 'doesnt_match', 'matches'],
-  ['lv-en-01', '/audio/en-1.ogg', 'matches', 'doesnt_match'],
-  ['lv-en-02', '/audio/en-2.ogg', 'matches', 'doesnt_match'],
+const ANSWER_KEY: [id: string, clip: string, correct: ListenAnswer, wrong: ListenAnswer][] = [
+  ['lv-kn-01', 'kn-1', 'matches', 'doesnt_match'],
+  ['lv-kn-02', 'kn-2', 'doesnt_match', 'matches'],
+  ['lv-en-01', 'en-1', 'matches', 'doesnt_match'],
+  ['lv-en-02', 'en-2', 'matches', 'doesnt_match'],
 ];
+
+// Lists files only; nothing is imported.
+const AUDIO_FILES = Object.keys(import.meta.glob('/public/audio/*')).map((path) =>
+  path.replace('/public', ''),
+);
 
 describe('Listen & Verify answer key', () => {
   it('covers every Listen & Verify task, with kn-2 as the only mismatch', () => {
@@ -27,8 +32,17 @@ describe('Listen & Verify answer key', () => {
     expect(mismatches.map(([id]) => id)).toEqual(['lv-kn-02']);
   });
 
-  it.each(ANSWER_KEY)('%s uses %s', (id, audio) => {
-    expect(listenTask(id).audioSrc).toBe(audio);
+  it.each(ANSWER_KEY)('%s uses %s.ogg first, then %s.mp3', (id, clip) => {
+    expect(listenTask(id).audioSources).toEqual([
+      { src: `/audio/${clip}.ogg`, type: 'audio/ogg; codecs=opus' },
+      { src: `/audio/${clip}.mp3`, type: 'audio/mpeg' },
+    ]);
+  });
+
+  it.each(ANSWER_KEY)('%s: every audio file exists in public/audio', (id) => {
+    for (const { src } of listenTask(id).audioSources) {
+      expect(AUDIO_FILES).toContain(src);
+    }
   });
 
   it.each(ANSWER_KEY)('%s: correct answer "%s" → suggest approve', (id, _audio, correct) => {

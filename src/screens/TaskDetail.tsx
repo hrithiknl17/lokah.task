@@ -183,7 +183,11 @@ function ListenMedia({
   const { t } = useI18n();
   return (
     <>
-      <AudioClip src={task.audioSrc} language={task.audioLanguage} onStatusChange={onStatusChange} />
+      <AudioClip
+        sources={task.audioSources}
+        language={task.audioLanguage}
+        onStatusChange={onStatusChange}
+      />
       <h2 className="transcript-heading">{t('listen.transcript')}</h2>
       <blockquote className="transcript" lang={task.audioLanguage}>
         {task.transcript}

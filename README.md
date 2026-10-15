@@ -55,18 +55,41 @@ submit for those tasks.
 
 | File | What it should contain |
 | --- | --- |
-| `public/audio/kn-1.ogg` ✅ | Kannada: "ನಾಳೆ ಬೆಳಿಗ್ಗೆ ಮಾರುಕಟ್ಟೆಗೆ ಹೋಗುತ್ತೇನೆ" — transcript matches |
-| `public/audio/kn-2.ogg` ✅ | Kannada: "ಬಸ್ **ಹತ್ತು** ಗಂಟೆಗೆ ಬರುತ್ತದೆ" — transcript says ಒಂಬತ್ತು (nine) on purpose, so "Doesn't match" is correct |
-| `public/audio/en-1.ogg` ✅ | English: "The train leaves at six in the evening." — transcript matches |
-| `public/audio/en-2.ogg` ✅ | English: "Please bring two kilos of rice." — transcript matches |
+| `public/audio/kn-1.ogg` + `.mp3` ✅ | Kannada: "ನಾಳೆ ಬೆಳಿಗ್ಗೆ ಮಾರುಕಟ್ಟೆಗೆ ಹೋಗುತ್ತೇನೆ" — transcript matches |
+| `public/audio/kn-2.ogg` + `.mp3` ✅ | Kannada: "ಬಸ್ **ಹತ್ತು** ಗಂಟೆಗೆ ಬರುತ್ತದೆ" — transcript says ಒಂಬತ್ತು (nine) on purpose, so "Doesn't match" is correct |
+| `public/audio/en-1.ogg` + `.mp3` ✅ | English: "The train leaves at six in the evening." — transcript matches |
+| `public/audio/en-2.ogg` + `.mp3` ✅ | English: "Please bring two kilos of rice." — transcript matches |
 | `public/images/di-01.jpg` | A market vegetable stall (640×480) |
 | `public/images/di-02.jpg` | A busy street (640×480) |
 | `public/images/di-03.jpg` | A home kitchen (640×480) |
 
-Audio is Ogg Opus (✅ = supplied and checked: loads and decodes in Chromium). Ogg Opus plays in
-Chrome, Firefox and Edge; older Safari/iOS versions may not support it, so ship an MP3 too if you
-need to support those. If you change what a clip says, update the transcript in
-`src/data/tasks.ts`. Update alt text there if images differ (`TODO(user)`).
+✅ = supplied and checked: served with an `audio/*` type and decodes in Chromium.
+
+**Audio formats.** Each clip ships twice, side by side:
+
+- `.ogg` — Ogg Opus, the original recording (~8 KB). Preferred.
+- `.mp3` — mono, 64 kbps CBR fallback (~35 KB) for browsers without Opus, such as older
+  Safari/iOS.
+
+The player lists them as `<source>` tags, ogg first, so each browser plays the first format it
+supports. Before showing the player, the app skips formats the browser can't play
+(`canPlayType`) and sends a `HEAD` request for the rest, in order. If the `.ogg` is missing, the
+player falls back to the `.mp3`. If neither is available it shows "Audio unavailable — try again
+later" and disables submit.
+
+To regenerate the MP3s after re-recording (needs ffmpeg with libmp3lame):
+
+```bash
+cd public/audio
+for f in kn-1 kn-2 en-1 en-2; do
+  ffmpeg -i "$f.ogg" -vn -map_metadata -1 -ac 1 -c:a libmp3lame -b:a 64k "$f.mp3"
+done
+```
+
+To add a clip, put `name.ogg` and `name.mp3` in `public/audio/` and use `clip('name')` in
+`src/data/tasks.ts`. A unit test fails if any listed file is missing. If you change what a clip
+says, update its transcript there too. Update image alt text there if images differ
+(`TODO(user)`).
 
 ## How data is stored
 
@@ -131,8 +154,9 @@ tests/e2e/        Playwright flow at 360px
 - **Reset clears language too.** Reset returns the whole demo to its first-visit state.
 - **Image unavailable also disables submit,** matching the audio rule, so nobody describes an
   image they could not see.
-- **Audio availability** is checked with a `HEAD` request (status + `audio/*` content type)
-  before the player is shown. No audio is downloaded until the user presses play.
+- **Audio availability** is checked with a `HEAD` request (status + `audio/*` content type) per
+  format, ogg then mp3, before the player is shown. No audio is downloaded until the user
+  presses play.
 - **Weekly goal** counts tasks submitted at least once since Monday 00:00 local time.
 - **No streak** is shown; the spec made it optional.
 - **"(English only)" example.** The "Not an official Kenpath product" line is intentionally left

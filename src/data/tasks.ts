@@ -1,9 +1,20 @@
-import type { LocalText, Task } from '../types';
+import type { AudioSource, LocalText, Task } from '../types';
 
 /*
  * Fictional example rates — not Kenpath Labs' rates.
  * All rewards are in paise (100 paise = ₹1) and exist only for this demo.
  */
+
+/**
+ * Each clip ships as Ogg Opus (small, preferred) with an MP3 fallback for
+ * browsers without Opus support, e.g. older Safari/iOS. Files live in public/audio/.
+ */
+function clip(name: string): readonly AudioSource[] {
+  return [
+    { src: `/audio/${name}.ogg`, type: 'audio/ogg; codecs=opus' },
+    { src: `/audio/${name}.mp3`, type: 'audio/mpeg' },
+  ];
+}
 
 const LISTEN_INSTRUCTIONS: LocalText = {
   en: 'Listen to the clip. Does the transcript match exactly what is said?',
@@ -23,7 +34,7 @@ export const TASKS: readonly Task[] = [
     instructions: LISTEN_INSTRUCTIONS,
     rewardPaise: 400,
     estMinutes: 1,
-    audioSrc: '/audio/kn-1.ogg',
+    audioSources: clip('kn-1'),
     audioLanguage: 'kn',
     // Spoken: "ನಾಳೆ ಬೆಳಿಗ್ಗೆ ಮಾರುಕಟ್ಟೆಗೆ ಹೋಗುತ್ತೇನೆ"
     transcript: 'ನಾಳೆ ಬೆಳಿಗ್ಗೆ ಮಾರುಕಟ್ಟೆಗೆ ಹೋಗುತ್ತೇನೆ',
@@ -36,7 +47,7 @@ export const TASKS: readonly Task[] = [
     instructions: LISTEN_INSTRUCTIONS,
     rewardPaise: 500,
     estMinutes: 1.5,
-    audioSrc: '/audio/kn-2.ogg',
+    audioSources: clip('kn-2'),
     audioLanguage: 'kn',
     // DELIBERATELY WRONG transcript: the correct answer is "Doesn't match".
     // Spoken: "ಬಸ್ ಹತ್ತು ಗಂಟೆಗೆ ಬರುತ್ತದೆ" (ten), transcript says ಒಂಬತ್ತು (nine).
@@ -54,7 +65,7 @@ export const TASKS: readonly Task[] = [
     instructions: LISTEN_INSTRUCTIONS,
     rewardPaise: 400,
     estMinutes: 1,
-    audioSrc: '/audio/en-1.ogg',
+    audioSources: clip('en-1'),
     audioLanguage: 'en',
     // Spoken: "The train leaves at six in the evening."
     transcript: 'The train leaves at six in the evening.',
@@ -67,7 +78,7 @@ export const TASKS: readonly Task[] = [
     instructions: LISTEN_INSTRUCTIONS,
     rewardPaise: 400,
     estMinutes: 1,
-    audioSrc: '/audio/en-2.ogg',
+    audioSources: clip('en-2'),
     audioLanguage: 'en',
     // Spoken: "Please bring two kilos of rice."
     transcript: 'Please bring two kilos of rice.',
