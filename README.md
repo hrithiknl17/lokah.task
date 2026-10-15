@@ -59,9 +59,9 @@ submit for those tasks.
 | `public/audio/kn-2.ogg` + `.mp3` ✅ | Kannada: "ಬಸ್ **ಹತ್ತು** ಗಂಟೆಗೆ ಬರುತ್ತದೆ" — transcript says ಒಂಬತ್ತು (nine) on purpose, so "Doesn't match" is correct |
 | `public/audio/en-1.ogg` + `.mp3` ✅ | English: "The train leaves at six in the evening." — transcript matches |
 | `public/audio/en-2.ogg` + `.mp3` ✅ | English: "Please bring two kilos of rice." — transcript matches |
-| `public/images/di-01.jpg` | A market vegetable stall (640×480) |
-| `public/images/di-02.jpg` | A busy street (640×480) |
-| `public/images/di-03.jpg` | A home kitchen (640×480) |
+| `public/images/di-01.jpg` ✅ | Vegetable market: vendor reaching over a pan of tomatoes |
+| `public/images/di-02.jpg` ✅ | Tree-lined street with a green and yellow auto-rickshaw |
+| `public/images/di-03.jpg` ✅ | Woman on a sofa speaking into a phone |
 
 ✅ = supplied and checked: served with an `audio/*` type and decodes in Chromium.
 
@@ -88,8 +88,20 @@ done
 
 To add a clip, put `name.ogg` and `name.mp3` in `public/audio/` and use `clip('name')` in
 `src/data/tasks.ts`. A unit test fails if any listed file is missing. If you change what a clip
-says, update its transcript there too. Update image alt text there if images differ
-(`TODO(user)`).
+says, update its transcript there too.
+
+**Images** are 640×480 JPEGs under 80 KB, made by scaling to cover and centre-cropping (never
+stretching). The full-size originals are kept in `assets-src/images/`, which is git-ignored and
+not shipped. To regenerate one:
+
+```bash
+ffmpeg -i assets-src/images/in2.jpg -map_metadata -1 -q:v 4 \
+  -vf "scale=640:480:force_original_aspect_ratio=increase:flags=lanczos,crop=640:480" \
+  public/images/di-01.jpg
+```
+
+(Source → task: `in2` → `di-01`, `in3` → `di-02`, `in1` → `di-03`.) Alt text for each image is in
+`src/data/tasks.ts`, in English and Kannada. Update it if an image changes.
 
 ## How data is stored
 

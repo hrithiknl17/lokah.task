@@ -92,8 +92,10 @@ export const TASKS: readonly Task[] = [
     rewardPaise: 900,
     estMinutes: 3,
     imageSrc: '/images/di-01.jpg',
-    // TODO(user): update alt text to match the supplied image.
-    imageAlt: { en: 'A vegetable stall at a local market', kn: 'ಸ್ಥಳೀಯ ಮಾರುಕಟ್ಟೆಯ ತರಕಾರಿ ಅಂಗಡಿ' },
+    imageAlt: {
+      en: 'At a covered vegetable market, a vendor in a white vest reaches over a large pan of tomatoes, with cucumbers beside it and an older man sorting produce behind.',
+      kn: 'ಮುಚ್ಚಿದ ತರಕಾರಿ ಮಾರುಕಟ್ಟೆಯಲ್ಲಿ ಬಿಳಿ ಬನಿಯನ್ ತೊಟ್ಟ ವ್ಯಾಪಾರಿ ಟೊಮೇಟೊ ತುಂಬಿದ ದೊಡ್ಡ ಪಾತ್ರೆಯ ಮೇಲೆ ಕೈ ಚಾಚಿದ್ದಾರೆ. ಪಕ್ಕದಲ್ಲಿ ಸೌತೆಕಾಯಿಗಳಿವೆ, ಹಿಂದೆ ಒಬ್ಬ ಹಿರಿಯರು ತರಕಾರಿ ಆರಿಸುತ್ತಿದ್ದಾರೆ.',
+    },
     imageWidth: 640,
     imageHeight: 480,
   },
@@ -105,21 +107,25 @@ export const TASKS: readonly Task[] = [
     rewardPaise: 900,
     estMinutes: 3,
     imageSrc: '/images/di-02.jpg',
-    // TODO(user): update alt text to match the supplied image.
-    imageAlt: { en: 'A busy street with shops and vehicles', kn: 'ಅಂಗಡಿಗಳು ಮತ್ತು ವಾಹನಗಳಿರುವ ಬೀದಿ' },
+    imageAlt: {
+      en: 'A green and yellow auto-rickshaw drives down a tree-lined street, past an old two-storey house behind a low wall.',
+      kn: 'ಮರಗಳಿರುವ ರಸ್ತೆಯಲ್ಲಿ ಹಸಿರು-ಹಳದಿ ಆಟೋರಿಕ್ಷಾ ಸಾಗುತ್ತಿದೆ. ಹಿಂದೆ ತಗ್ಗು ಗೋಡೆಯ ಹಿಂದೆ ಹಳೆಯ ಎರಡು ಅಂತಸ್ತಿನ ಮನೆ ಇದೆ.',
+    },
     imageWidth: 640,
     imageHeight: 480,
   },
   {
     id: 'di-03',
     kind: 'describe_image',
-    title: { en: 'Describe a kitchen', kn: 'ಅಡುಗೆಮನೆ ವಿವರಿಸಿ' },
+    title: { en: 'Describe a phone call', kn: 'ಫೋನ್ ಕರೆ ದೃಶ್ಯ ವಿವರಿಸಿ' },
     instructions: DESCRIBE_INSTRUCTIONS,
     rewardPaise: 1000,
     estMinutes: 4,
     imageSrc: '/images/di-03.jpg',
-    // TODO(user): update alt text to match the supplied image.
-    imageAlt: { en: 'A home kitchen with cooking pots', kn: 'ಪಾತ್ರೆಗಳಿರುವ ಮನೆಯ ಅಡುಗೆಮನೆ' },
+    imageAlt: {
+      en: 'A smiling young woman in an orange top sits on a grey sofa at home, speaking into a phone held near her mouth.',
+      kn: 'ಕಿತ್ತಳೆ ಬಣ್ಣದ ಟಾಪ್ ತೊಟ್ಟ ನಗುಮುಖದ ಯುವತಿ ಮನೆಯಲ್ಲಿ ಬೂದು ಸೋಫಾದ ಮೇಲೆ ಕುಳಿತು, ಬಾಯಿಯ ಬಳಿ ಹಿಡಿದ ಫೋನ್‌ಗೆ ಮಾತನಾಡುತ್ತಿದ್ದಾರೆ.',
+    },
     imageWidth: 640,
     imageHeight: 480,
   },

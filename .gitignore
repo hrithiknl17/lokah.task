@@ -4,3 +4,6 @@ dist
 test-results
 playwright-report
 .vite
+
+# Original, full-size source images (resized copies live in public/images)
+assets-src/
