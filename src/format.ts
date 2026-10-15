@@ -2,8 +2,19 @@ import type { Lang } from './types';
 
 const inr = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' });
 
+const inrWhole = new Intl.NumberFormat('en-IN', {
+  style: 'currency',
+  currency: 'INR',
+  maximumFractionDigits: 0,
+});
+
 export function formatPaise(paise: number): string {
   return inr.format(paise / 100);
+}
+
+/** Whole rupees, for estimates such as ₹/hour where paise imply false precision. */
+export function formatPaiseRounded(paise: number): string {
+  return inrWhole.format(Math.round(paise / 100));
 }
 
 const LOCALES: Record<Lang, string> = { en: 'en-IN', kn: 'kn-IN' };

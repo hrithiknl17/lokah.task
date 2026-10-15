@@ -1,5 +1,5 @@
 import { ratePerHourPaise } from '../data/tasks';
-import { formatPaise } from '../format';
+import { formatPaise, formatPaiseRounded } from '../format';
 import { useI18n } from '../i18n';
 import { href } from '../router';
 import type { Task, TaskStatus } from '../types';
@@ -12,13 +12,7 @@ export function RewardSummary({ task }: { task: Task }) {
   return (
     <RewardLine>
       <strong className="reward-line__amount">{formatPaise(task.rewardPaise)}</strong>
-      <span className="reward-line__sep" aria-hidden="true">
-        ·
-      </span>
-      <span>{t('task.perHour', { rate: formatPaise(ratePerHourPaise(task)) })}</span>
-      <span className="reward-line__sep" aria-hidden="true">
-        ·
-      </span>
+      <span>{t('task.perHour', { rate: formatPaiseRounded(ratePerHourPaise(task)) })}</span>
       <span>{t('task.minutes', { n: task.estMinutes })}</span>
     </RewardLine>
   );
