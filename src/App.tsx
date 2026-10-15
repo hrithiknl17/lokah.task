@@ -63,9 +63,6 @@ function Shell() {
       }}>
         {t('app.skip')}
       </a>
-      <header className="app-header">
-        <span className="app-header__name">{t('app.name')}</span>
-      </header>
       {notice && (
         <div className="app-notice">
           <Notice tone="warning" onDismiss={dismissNotice}>

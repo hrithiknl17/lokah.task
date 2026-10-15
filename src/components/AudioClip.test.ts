@@ -1,6 +1,36 @@
 import { describe, expect, it } from 'vitest';
 import type { AudioSource } from '../types';
-import { type AudioProbe, findPlayableSource } from './AudioClip';
+import { type AudioProbe, computePeaks, findPlayableSource, formatClock } from './AudioClip';
+
+describe('computePeaks', () => {
+  it('takes the loudest sample per slice and scales to the loudest slice', () => {
+    const samples = new Float32Array([0.1, -0.5, 0.2, 0.25, -1, 0.3]);
+    expect(computePeaks(samples, 3)).toEqual([0.5, 0.25, 1]);
+  });
+
+  it('keeps quiet slices visible with a floor', () => {
+    const samples = new Float32Array([0, 0, 0.01, 0.01, 1, 1]);
+    expect(computePeaks(samples, 3)).toEqual([0.12, 0.12, 1]);
+  });
+
+  it('handles silence and empty input', () => {
+    expect(computePeaks(new Float32Array(8), 4)).toEqual([0.12, 0.12, 0.12, 0.12]);
+    expect(computePeaks(new Float32Array(0), 4)).toEqual([]);
+  });
+});
+
+describe('formatClock', () => {
+  it('formats seconds as m:ss', () => {
+    expect(formatClock(0)).toBe('0:00');
+    expect(formatClock(4.34)).toBe('0:04');
+    expect(formatClock(75)).toBe('1:15');
+  });
+
+  it('shows a placeholder until the duration is known', () => {
+    expect(formatClock(Number.NaN)).toBe('-:--');
+    expect(formatClock(Number.POSITIVE_INFINITY)).toBe('-:--');
+  });
+});
 
 const SOURCES: AudioSource[] = [
   { src: '/audio/kn-1.ogg', type: 'audio/ogg; codecs=opus' },

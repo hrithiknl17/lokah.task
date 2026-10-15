@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { type CSSProperties, useEffect, useRef, useState } from 'react';
 import { useI18n } from '../i18n';
 import type { AudioSource, Lang } from '../types';
 import { Icon } from './Icon';
@@ -36,6 +36,48 @@ export async function findPlayableSource(
   return -1;
 }
 
+const FLOOR = 0.12;
+const BAR_COUNT = 48;
+/** Shown until the clip has played once; nothing is downloaded before that. */
+const FLAT = Array.from({ length: BAR_COUNT }, () => FLOOR);
+
+/** Loudest sample per slice, scaled to 0..1, with a floor so quiet slices stay visible. */
+export function computePeaks(samples: Float32Array, count: number): number[] {
+  if (samples.length === 0 || count <= 0) return [];
+  const slice = Math.max(1, Math.floor(samples.length / count));
+  const peaks: number[] = [];
+  for (let i = 0; i < count; i++) {
+    let max = 0;
+    const end = Math.min(samples.length, (i + 1) * slice);
+    for (let j = i * slice; j < end; j++) {
+      const value = Math.abs(samples[j] ?? 0);
+      if (value > max) max = value;
+    }
+    peaks.push(max);
+  }
+  const loudest = Math.max(...peaks);
+  if (loudest === 0) return peaks.map(() => FLOOR);
+  return peaks.map((p) => Math.max(FLOOR, p / loudest));
+}
+
+/** Decode a clip the player has already fetched, to draw its real waveform. */
+async function decodePeaks(src: string): Promise<number[] | null> {
+  if (typeof OfflineAudioContext === 'undefined') return null;
+  try {
+    const data = await (await fetch(src)).arrayBuffer();
+    const buffer = await new OfflineAudioContext(1, 1, 44100).decodeAudioData(data);
+    return computePeaks(buffer.getChannelData(0), BAR_COUNT);
+  } catch {
+    return null; // Keep the flat line; playback is unaffected.
+  }
+}
+
+export function formatClock(seconds: number): string {
+  if (!Number.isFinite(seconds) || seconds < 0) return '-:--';
+  const whole = Math.floor(seconds);
+  return `${Math.floor(whole / 60)}:${String(whole % 60).padStart(2, '0')}`;
+}
+
 function browserCanPlay(type: string): boolean {
   return document.createElement('audio').canPlayType(type) !== '';
 }
@@ -55,8 +97,13 @@ export function AudioClip({
   onStatusChange: (status: MediaStatus) => void;
 }) {
   const { t, ts } = useI18n();
+  const audioRef = useRef<HTMLAudioElement>(null);
   const [status, setStatus] = useState<MediaStatus>('checking');
   const [first, setFirst] = useState(0);
+  const [playing, setPlaying] = useState(false);
+  const [current, setCurrent] = useState(0);
+  const [duration, setDuration] = useState(Number.NaN);
+  const [peaks, setPeaks] = useState<number[] | null>(null);
   const sourcesKey = sources.map((s) => s.src).join('|');
 
   useEffect(() => {
@@ -93,27 +140,102 @@ export function AudioClip({
     );
   }
 
-  // Start from the first reachable source; later ones remain as fallbacks.
+  const toggle = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (!audio.paused) {
+      audio.pause();
+      return;
+    }
+    audio
+      .play()
+      .then(() => {
+        if (!peaks && audio.currentSrc) void decodePeaks(audio.currentSrc).then(setPeaks);
+      })
+      .catch((error: unknown) => {
+        // No playable source after all. Other rejections (e.g. an interrupted
+        // play) leave the player as it is.
+        if (error instanceof DOMException && error.name === 'NotSupportedError') {
+          setStatus('unavailable');
+        }
+      });
+  };
+
+  const known = Number.isFinite(duration) && duration > 0;
+  const progress = known ? current / duration : 0;
+  const bars = peaks ?? FLAT;
   const playable = sources.slice(first);
+
   return (
-    <audio
-      className="audio"
-      controls
-      preload="none"
-      lang={language}
-      aria-label={ts('audio.label', { lang: ts(`lang.${language}`) })}
-      onError={() => setStatus('unavailable')}
-    >
-      {playable.map((source, index) => (
-        <source
-          key={source.src}
-          src={source.src}
-          type={source.type}
-          // With <source> children, load failures fire on the source, not the
-          // <audio>. Only the last one failing means nothing can play.
-          onError={index === playable.length - 1 ? () => setStatus('unavailable') : undefined}
+    <div className="player">
+      <audio
+        ref={audioRef}
+        className="player__media"
+        preload="none"
+        lang={language}
+        aria-label={ts('audio.label', { lang: ts(`lang.${language}`) })}
+        onPlay={() => setPlaying(true)}
+        onPause={() => setPlaying(false)}
+        onEnded={() => setPlaying(false)}
+        onTimeUpdate={(e) => setCurrent(e.currentTarget.currentTime)}
+        onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
+        onDurationChange={(e) => setDuration(e.currentTarget.duration)}
+        onError={() => setStatus('unavailable')}
+      >
+        {playable.map((source, index) => (
+          <source
+            key={source.src}
+            src={source.src}
+            type={source.type}
+            // With <source> children, load failures fire on the source, not the
+            // <audio>. Only the last one failing means nothing can play.
+            onError={index === playable.length - 1 ? () => setStatus('unavailable') : undefined}
+          />
+        ))}
+      </audio>
+
+      <button
+        type="button"
+        className="player__play"
+        aria-label={ts(playing ? 'audio.pause' : 'audio.play')}
+        onClick={toggle}
+      >
+        <Icon name={playing ? 'pause' : 'play'} size={26} />
+      </button>
+
+      <div className="player__track">
+        <div className="waveform" aria-hidden="true">
+          {bars.map((height, i) => (
+            <span
+              key={i}
+              className={(i + 0.5) / bars.length <= progress ? 'is-played' : undefined}
+              style={{ '--h': height } as CSSProperties}
+            />
+          ))}
+        </div>
+        <input
+          type="range"
+          className="player__seek"
+          min={0}
+          max={known ? duration : 0}
+          step={0.01}
+          value={known ? current : 0}
+          disabled={!known}
+          aria-label={ts('audio.seek')}
+          aria-valuetext={ts('audio.timeOf', {
+            current: formatClock(current),
+            total: formatClock(duration),
+          })}
+          onChange={(e) => {
+            const audio = audioRef.current;
+            if (audio) audio.currentTime = Number(e.target.value);
+          }}
         />
-      ))}
-    </audio>
+      </div>
+
+      <span className="player__time" aria-hidden="true">
+        {formatClock(current)} / {formatClock(duration)}
+      </span>
+    </div>
   );
 }

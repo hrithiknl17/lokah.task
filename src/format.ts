@@ -19,6 +19,10 @@ export function formatPaiseRounded(paise: number): string {
 
 const LOCALES: Record<Lang, string> = { en: 'en-IN', kn: 'kn-IN' };
 
+export function formatWeekday(date: Date, lang: Lang): string {
+  return new Intl.DateTimeFormat(LOCALES[lang], { weekday: 'short' }).format(date);
+}
+
 export function formatDateTime(iso: string, lang: Lang): string {
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return '';

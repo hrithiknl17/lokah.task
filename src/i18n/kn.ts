@@ -144,6 +144,31 @@ export const kn: Partial<Dictionary> = {
   'notFound.title': 'ಪುಟ ಸಿಗಲಿಲ್ಲ',
   'notFound.link': 'ಮುಖಪುಟಕ್ಕೆ ಹೋಗಿ',
 
+  'home.heroTitle': 'ನಿಮ್ಮ ಕೊಡುಗೆ ಮುಖ್ಯ.',
+  'home.rewards': 'ನಿಮ್ಮ ಬಹುಮಾನಗಳು',
+  'home.picked': 'ನಿಮಗಾಗಿ ಆಯ್ದ ಕೆಲಸಗಳು',
+  'home.viewAll': 'ಎಲ್ಲಾ ನೋಡಿ',
+
+  'tasks.filterLabel': 'ಕೆಲಸದ ಪ್ರಕಾರ ತೋರಿಸಿ',
+  'tasks.filterAll': 'ಎಲ್ಲಾ',
+  'tasks.emptyFilter': 'ಈ ಪ್ರಕಾರದ ಕೆಲಸ ಇಲ್ಲಿ ಇಲ್ಲ.',
+
+  'audio.play': 'ಕ್ಲಿಪ್ ಪ್ಲೇ ಮಾಡಿ',
+  'audio.pause': 'ಕ್ಲಿಪ್ ನಿಲ್ಲಿಸಿ',
+  'audio.seek': 'ಕ್ಲಿಪ್‌ನಲ್ಲಿ ಸ್ಥಾನ',
+  'audio.timeOf': '{total} ರಲ್ಲಿ {current}',
+
+  'task.submittedTitle': 'ಸಲ್ಲಿಸಲಾಗಿದೆ!',
+  'task.nextTask': 'ಮುಂದಿನ ಕೆಲಸ',
+
+  'earnings.week': 'ಈ ವಾರ ಅನುಮೋದಿತ',
+  'earnings.weekEmpty': 'ಕಳೆದ 7 ದಿನಗಳಲ್ಲಿ ಯಾವುದೇ ಅನುಮೋದಿತ ಬಹುಮಾನ ಇಲ್ಲ.',
+
+  'history.filterLabel': 'ಸ್ಥಿತಿ ತೋರಿಸಿ',
+  'history.pending': 'ಬಾಕಿ',
+  'history.emptyFilter': 'ಈ ಸ್ಥಿತಿಯಲ್ಲಿ ಯಾವುದೇ ಕೆಲಸ ಇಲ್ಲ.',
+  'history.timeline': 'ಎಲ್ಲಾ ಬದಲಾವಣೆಗಳನ್ನು ತೋರಿಸಿ',
+
   // Intentionally untranslated, to show the "(English only)" fallback:
   // 'app.notOfficial', 'common.englishOnly'
 };

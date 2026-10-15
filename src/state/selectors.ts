@@ -142,3 +142,63 @@ export function selectOpenTasks(state: AppState): Task[] {
     return status === 'available' || status === 'in_progress' || status === 'needs_revision';
   });
 }
+
+/**
+ * Open tasks in the order worth suggesting: ones already started or sent
+ * back for revision first, then untouched ones, in catalogue order.
+ */
+export function selectRecommendedTasks(state: AppState, limit: number): Task[] {
+  const open = selectOpenTasks(state);
+  const started = open.filter((task) => getStatus(state, task.id) !== 'available');
+  const fresh = open.filter((task) => getStatus(state, task.id) === 'available');
+  return [...started, ...fresh].slice(0, limit);
+}
+
+export interface TaskTimeline {
+  task: Task;
+  status: TaskStatus;
+  lastAt: string;
+  /** Status changes for this task, newest first. */
+  events: StatusEvent[];
+}
+
+/** One row per started task with its full status history, most recently changed first. */
+export function selectTaskTimelines(state: AppState): TaskTimeline[] {
+  const rows: TaskTimeline[] = [];
+  for (const submission of Object.values(state.submissions)) {
+    const task = getTask(submission.taskId);
+    const last = submission.history[submission.history.length - 1];
+    if (!task || !last) continue;
+    rows.push({
+      task,
+      status: submission.status,
+      lastAt: last.at,
+      events: [...submission.history].reverse(),
+    });
+  }
+  return rows.sort((a, b) => b.lastAt.localeCompare(a.lastAt));
+}
+
+export interface DayTotal {
+  /** Local midnight at the start of the day. */
+  day: Date;
+  approvedPaise: number;
+}
+
+/** Approved rewards per day for the last `days` days, oldest first, ending today. */
+export function selectApprovedByDay(state: AppState, now: Date, days = 7): DayTotal[] {
+  const today = new Date(now);
+  today.setHours(0, 0, 0, 0);
+  const totals: DayTotal[] = Array.from({ length: days }, (_, i) => {
+    const day = new Date(today);
+    day.setDate(today.getDate() - (days - 1 - i));
+    return { day, approvedPaise: 0 };
+  });
+  for (const entry of selectLedger(state)) {
+    const at = new Date(entry.approvedAt);
+    at.setHours(0, 0, 0, 0);
+    const bucket = totals.find((t) => t.day.getTime() === at.getTime());
+    if (bucket) bucket.approvedPaise += entry.rewardPaise;
+  }
+  return totals;
+}

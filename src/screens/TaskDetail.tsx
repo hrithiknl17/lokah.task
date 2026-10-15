@@ -1,4 +1,12 @@
-import { type FormEvent, type ReactNode, useCallback, useId, useState } from 'react';
+import {
+  type FormEvent,
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+} from 'react';
 import { type MediaStatus, AudioClip } from '../components/AudioClip';
 import { Icon } from '../components/Icon';
 import { Notice } from '../components/Notice';
@@ -6,7 +14,8 @@ import { type ReviewResult, ReviewerPanel } from '../components/ReviewerPanel';
 import { StatusBadge } from '../components/StatusBadge';
 import { RewardSummary } from '../components/TaskCard';
 import { TaskImage } from '../components/TaskImage';
-import { getTask } from '../data/tasks';
+import { TASKS, getTask } from '../data/tasks';
+import { selectRecommendedTasks } from '../state/selectors';
 import { useI18n } from '../i18n';
 import type { MessageKey } from '../i18n/en';
 import { href } from '../router';
@@ -20,6 +29,7 @@ import type {
   ListenVerifyTask,
   Submission,
   Task,
+  TaskStatus,
 } from '../types';
 
 export function TaskDetail({ taskId }: { taskId: string }) {
@@ -38,13 +48,15 @@ export function TaskDetail({ taskId }: { taskId: string }) {
   return <TaskView task={task} />;
 }
 
-function BackLink() {
-  const { t } = useI18n();
+function BackLink({ status }: { status?: TaskStatus }) {
+  const { ts } = useI18n();
   return (
-    <a className="back-link" href={href.tasks}>
-      <Icon name="chevronLeft" />
-      {t('common.backToTasks')}
-    </a>
+    <div className="task-topbar">
+      <a className="icon-link" href={href.tasks} aria-label={ts('common.backToTasks')}>
+        <Icon name="chevronLeft" size={22} />
+      </a>
+      {status && <StatusBadge status={status} />}
+    </div>
   );
 }
 
@@ -54,36 +66,46 @@ function TaskView({ task }: { task: Task }) {
   const submission = state.submissions[task.id];
   const status = submission?.status ?? 'available';
   const [liveMessage, setLiveMessage] = useState<ReactNode>(null);
+  const [justSubmitted, setJustSubmitted] = useState(false);
+  const next = selectRecommendedTasks(state, TASKS.length).find((other) => other.id !== task.id);
 
   const onReviewed = useCallback(
-    (result: ReviewResult) =>
-      setLiveMessage(t(result === 'approved' ? 'reviewer.approvedMsg' : 'reviewer.revisionMsg')),
+    (result: ReviewResult) => {
+      setJustSubmitted(false);
+      setLiveMessage(t(result === 'approved' ? 'reviewer.approvedMsg' : 'reviewer.revisionMsg'));
+    },
     [t],
   );
 
   return (
     <>
-      <BackLink />
+      <BackLink status={status} />
       <header className="task-header">
         <p className="eyebrow">{t(`kind.${task.kind}`)}</p>
         <h1 tabIndex={-1}>{lt(task.title)}</h1>
-        <StatusBadge status={status} />
         <RewardSummary task={task} />
         <p className="fine-print">{t('task.ratesNote')}</p>
       </header>
 
       {/* Announces submit and review results; stays mounted across status changes. */}
       <div className="live-region" role="status" aria-live="polite">
-        {liveMessage && (
-          <Notice tone="success" onDismiss={() => setLiveMessage(null)}>
-            {liveMessage}
-          </Notice>
+        {justSubmitted && status === 'pending_review' ? (
+          <SubmittedCard next={next} />
+        ) : (
+          liveMessage && (
+            <Notice tone="success" onDismiss={() => setLiveMessage(null)}>
+              {liveMessage}
+            </Notice>
+          )
         )}
       </div>
 
-      <section className="card">
-        <h2>{t('task.instructions')}</h2>
-        <p>{lt(task.instructions)}</p>
+      <section className="panel panel--mint instructions">
+        <Icon name="info" size={22} />
+        <div>
+          <h2>{t('task.instructions')}</h2>
+          <p>{lt(task.instructions)}</p>
+        </div>
       </section>
 
       {status === 'available' && (
@@ -100,7 +122,11 @@ function TaskView({ task }: { task: Task }) {
         <StartedTask
           task={task}
           submission={submission}
-          onSubmitted={() => setLiveMessage(t('task.submitted'))}
+          justSubmitted={justSubmitted}
+          onSubmitted={() => {
+            setJustSubmitted(true);
+            setLiveMessage(t('task.submitted'));
+          }}
           onReviewed={onReviewed}
         />
       )}
@@ -108,14 +134,44 @@ function TaskView({ task }: { task: Task }) {
   );
 }
 
+/** Shown once, right after submitting. Takes focus so the result is seen and heard. */
+function SubmittedCard({ next }: { next: Task | undefined }) {
+  const { t } = useI18n();
+  const heading = useRef<HTMLHeadingElement>(null);
+  useEffect(() => heading.current?.focus(), []);
+  return (
+    <section className="panel submitted" aria-labelledby="submitted-title">
+      <span className="submitted__icon">
+        <Icon name="approved" size={34} />
+      </span>
+      <h2 id="submitted-title" ref={heading} tabIndex={-1}>
+        {t('task.submittedTitle')}
+      </h2>
+      <p>{t('task.pendingInfo')}</p>
+      <div className="submitted__actions">
+        {next && (
+          <a className="button button--primary button--block" href={href.task(next.id)}>
+            {t('task.nextTask')}
+          </a>
+        )}
+        <a className="button button--secondary button--block" href={href.tasks}>
+          {t('common.backToTasks')}
+        </a>
+      </div>
+    </section>
+  );
+}
+
 function StartedTask({
   task,
   submission,
+  justSubmitted,
   onSubmitted,
   onReviewed,
 }: {
   task: Task;
   submission: Submission;
+  justSubmitted: boolean;
   onSubmitted: () => void;
   onReviewed: (result: ReviewResult) => void;
 }) {
@@ -133,7 +189,9 @@ function StartedTask({
           <p>{t('task.revisionAgain')}</p>
         </Notice>
       )}
-      {status === 'pending_review' && <Notice tone="info">{t('task.pendingInfo')}</Notice>}
+      {status === 'pending_review' && !justSubmitted && (
+        <Notice tone="info">{t('task.pendingInfo')}</Notice>
+      )}
       {status === 'approved' && <Notice tone="success">{t('task.approvedInfo')}</Notice>}
 
       <section className="card">

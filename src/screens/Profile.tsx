@@ -1,6 +1,8 @@
 import { useId, useState } from 'react';
 import { ConfirmDialog } from '../components/ConfirmDialog';
+import { Icon } from '../components/Icon';
 import { Notice } from '../components/Notice';
+import { PageHeader } from '../components/PageHeader';
 import { useI18n } from '../i18n';
 import { useAppState } from '../state/context';
 import { DISPLAY_NAME_MAX } from '../state/reducer';
@@ -20,7 +22,15 @@ export function Profile() {
 
   return (
     <>
-      <h1 tabIndex={-1}>{t('profile.title')}</h1>
+      <PageHeader title={t('profile.title')} />
+
+      <div className="avatar avatar--large" aria-hidden="true">
+        {state.profile.displayName.trim() ? (
+          state.profile.displayName.trim().charAt(0).toUpperCase()
+        ) : (
+          <Icon name="user" size={36} />
+        )}
+      </div>
 
       <div className="live-region" role="status" aria-live="polite">
         {resetDone && (
@@ -60,6 +70,7 @@ export function Profile() {
                   onChange={() => dispatch({ type: 'SET_PROFILE', profile: { language: lang } })}
                 />
                 <span>{NATIVE_NAME[lang]}</span>
+                {state.profile.language === lang && <Icon name="checkCircle" size={20} />}
               </label>
             ))}
           </div>

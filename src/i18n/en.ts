@@ -106,7 +106,7 @@ export const en = {
   'home.milestoneReached': 'Milestone reached: {n} tasks approved',
   'home.continue': 'Pick up where you left off',
   'home.available': 'Open tasks: {n}',
-  'home.browse': 'Browse tasks',
+  'home.browse': 'Explore tasks',
   'home.earnings': 'Your earnings',
   'home.viewEarnings': 'View earnings',
 
@@ -143,6 +143,31 @@ export const en = {
 
   'notFound.title': 'Page not found',
   'notFound.link': 'Go to Home',
+
+  'home.heroTitle': 'Your contribution matters.',
+  'home.rewards': 'Your rewards',
+  'home.picked': 'Tasks picked for you',
+  'home.viewAll': 'View all',
+
+  'tasks.filterLabel': 'Show task type',
+  'tasks.filterAll': 'All',
+  'tasks.emptyFilter': 'No tasks of this type here.',
+
+  'audio.play': 'Play clip',
+  'audio.pause': 'Pause clip',
+  'audio.seek': 'Position in clip',
+  'audio.timeOf': '{current} of {total}',
+
+  'task.submittedTitle': 'Submitted!',
+  'task.nextTask': 'Next task',
+
+  'earnings.week': 'Approved this week',
+  'earnings.weekEmpty': 'No approved rewards in the last 7 days.',
+
+  'history.filterLabel': 'Show status',
+  'history.pending': 'Pending',
+  'history.emptyFilter': 'No tasks with this status.',
+  'history.timeline': 'Show all updates',
 } as const;
 
 export type MessageKey = keyof typeof en;
