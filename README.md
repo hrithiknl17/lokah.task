@@ -5,8 +5,15 @@ A mobile-first prototype of a platform where people complete small paid language
 
 **Useful work. Fair rewards. Clear progress.**
 
+**Live demo: https://lokah-tasks.vercel.app** (best viewed at phone width)
+
 > Portfolio assessment inspired by Kenpath Labs. **Not an official Kenpath product.**
 > All rates and amounts are fictional demo data.
+
+<p align="center">
+  <img src="docs/screenshot-home.png" width="320"
+    alt="Lokah Tasks home screen: welcome title, Explore tasks button, and an approved earnings total of ₹13.00 labelled demo data">
+</p>
 
 ## Features
 
