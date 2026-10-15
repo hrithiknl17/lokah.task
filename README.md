@@ -25,9 +25,14 @@ A mobile-first prototype of a platform where people complete small paid language
 - **Demo reviewer panel** — clearly labelled as simulated. It shows a suggestion (from the answer
   key for Listen & Verify; "decide manually" for descriptions) and lets you approve or request
   revision with a plain-language reason.
-- **Earnings** — approved and pending totals kept separate, a ledger of approved rewards, and an
-  explanation of how real payouts work. There is no withdraw button.
-- **History** — every status change across all tasks, newest first.
+- **Earnings** — approved and pending totals kept separate, a 7-day chart of approved rewards
+  (built from real approvals only), a ledger of approved rewards, and an explanation of how real
+  payouts work. There is no withdraw button.
+- **History** — one row per task with its current status, filterable by status, with every
+  status change available under "Show all updates".
+- **Calm, minimal design** — warm off-white and white surfaces, one mint accent, deep-green
+  actions. The Listen & Verify player has a large play button and a waveform decoded from the
+  real clip (flat until first play, so nothing downloads early) that doubles as a seek slider.
 - **Light engagement** — a weekly goal (5 tasks) and one milestone (5 approved). No streak
   pressure, countdowns, leaderboards or random rewards.
 - **English and Kannada** — switch in Profile. Missing Kannada strings fall back to English with
