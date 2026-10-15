@@ -23,6 +23,35 @@ function normalize(text: string): string {
     .trim();
 }
 
+function texts(value: LocalText): string[] {
+  return [value.en, value.kn].filter((s): s is string => typeof s === 'string' && s.length > 0);
+}
+
+/** Either text contains the other, after normalising. */
+function contains(a: string, b: string): boolean {
+  return a.includes(b) || b.includes(a);
+}
+
+function wordPairs(normalized: string): string[] {
+  const words = normalized.split(' ').filter(Boolean);
+  return words.slice(1).map((word, i) => `${words[i]} ${word}`);
+}
+
+/**
+ * Share of the answer's consecutive word pairs that also appear in the
+ * source. A pasted text with a word or two changed still scores high; an
+ * honest description that reuses a few words ("auto rickshaw") does not.
+ */
+function pairOverlap(answer: string, source: string): number {
+  const pairs = wordPairs(answer);
+  if (pairs.length === 0) return 0;
+  const sourcePairs = new Set(wordPairs(source));
+  return pairs.filter((pair) => sourcePairs.has(pair)).length / pairs.length;
+}
+
+/** At or above this share of word pairs from the alt text, the answer counts as copied. */
+export const ALT_OVERLAP_LIMIT = 0.75;
+
 /**
  * Deterministic pre-checks for an image description.
  * Returns null when the text may go to review. Passing never means approved.
@@ -30,6 +59,7 @@ function normalize(text: string): string {
 export function validateDescription(
   text: string,
   instructions: LocalText,
+  imageAlt?: LocalText,
 ): DescriptionError | null {
   const trimmed = text.trim();
   if (trimmed.length === 0) return 'empty';
@@ -37,12 +67,16 @@ export function validateDescription(
   if (length(trimmed) > DESCRIPTION_MAX) return 'too_long';
 
   const answer = normalize(trimmed);
-  const sources = [instructions.en, instructions.kn].filter(
-    (s): s is string => typeof s === 'string' && s.length > 0,
-  );
-  for (const source of sources) {
-    const instruction = normalize(source);
-    if (answer.includes(instruction) || instruction.includes(answer)) return 'copied';
+  for (const source of texts(instructions)) {
+    if (contains(answer, normalize(source))) return 'copied';
+  }
+  // The alt text is readable by anyone (screen readers, page source), so a
+  // pasted or lightly edited copy of it is not the worker's own description.
+  for (const source of imageAlt ? texts(imageAlt) : []) {
+    const alt = normalize(source);
+    if (contains(answer, alt) || pairOverlap(answer, alt) >= ALT_OVERLAP_LIMIT) {
+      return 'copied_alt';
+    }
   }
   return null;
 }
@@ -101,5 +135,6 @@ export function isAnswerAcceptable(task: Task, answer: Answer): boolean {
   if (answer.kind === 'listen_verify') {
     return answer.choice === 'matches' || answer.choice === 'doesnt_match';
   }
-  return validateDescription(answer.text, task.instructions) === null;
+  if (task.kind !== 'describe_image') return false;
+  return validateDescription(answer.text, task.instructions, task.imageAlt) === null;
 }

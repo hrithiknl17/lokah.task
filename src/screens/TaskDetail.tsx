@@ -305,6 +305,7 @@ const DESCRIPTION_ERRORS: Record<DescriptionError, MessageKey> = {
   too_short: 'describe.error.too_short',
   too_long: 'describe.error.too_long',
   copied: 'describe.error.copied',
+  copied_alt: 'describe.error.copied_alt',
 };
 
 function DescribeForm({
@@ -331,7 +332,7 @@ function DescribeForm({
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
-    const problem = validateDescription(text, task.instructions);
+    const problem = validateDescription(text, task.instructions, task.imageAlt);
     if (problem) {
       setError(problem);
       return;

@@ -133,6 +133,19 @@ test('falls back to mp3 when the ogg file is missing', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'Submit for review' })).toBeEnabled();
 });
 
+test("pasting the image's alt text is rejected with a plain-language reason", async ({ page }) => {
+  await page.goto('/#/tasks/di-02');
+  await page.getByRole('button', { name: 'Start task' }).click();
+  const alt = await page.locator('.image-frame img').getAttribute('alt');
+  expect(alt?.length).toBeGreaterThan(40);
+  await page.getByLabel('Your description').fill(alt ?? '');
+  await page.getByRole('button', { name: 'Submit for review' }).click();
+  await expect(page.getByRole('alert')).toContainText(
+    "This is too close to the image's built-in description.",
+  );
+  await expect(page.getByText('In progress').first()).toBeVisible();
+});
+
 test('missing audio shows a message and disables submit', async ({ page }) => {
   await page.route('**/audio/**', (route) => route.fulfill({ status: 404, body: '' }));
   await page.goto('/#/tasks/lv-kn-01');

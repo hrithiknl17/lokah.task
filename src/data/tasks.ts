@@ -109,7 +109,7 @@ export const TASKS: readonly Task[] = [
     imageSrc: '/images/di-02.jpg',
     imageAlt: {
       en: 'A green and yellow auto-rickshaw drives down a tree-lined street, past an old two-storey house behind a low wall.',
-      kn: 'ಮರಗಳಿರುವ ರಸ್ತೆಯಲ್ಲಿ ಹಸಿರು-ಹಳದಿ ಆಟೋರಿಕ್ಷಾ ಸಾಗುತ್ತಿದೆ. ಹಿಂದೆ ತಗ್ಗು ಗೋಡೆಯ ಹಿಂದೆ ಹಳೆಯ ಎರಡು ಅಂತಸ್ತಿನ ಮನೆ ಇದೆ.',
+      kn: 'ಮರಗಳಿರುವ ರಸ್ತೆಯಲ್ಲಿ ಹಸಿರು-ಹಳದಿ ಆಟೋರಿಕ್ಷಾ ಸಾಗುತ್ತಿದೆ. ಪಕ್ಕದಲ್ಲಿ ತಗ್ಗು ಗೋಡೆಯ ಹಿಂದೆ ಹಳೆಯ ಎರಡು ಅಂತಸ್ತಿನ ಮನೆ ಇದೆ.',
     },
     imageWidth: 640,
     imageHeight: 480,
@@ -117,7 +117,7 @@ export const TASKS: readonly Task[] = [
   {
     id: 'di-03',
     kind: 'describe_image',
-    title: { en: 'Describe a phone call', kn: 'ಫೋನ್ ಕರೆ ದೃಶ್ಯ ವಿವರಿಸಿ' },
+    title: { en: 'Describe a phone call', kn: 'ಫೋನ್ ಕರೆಯ ದೃಶ್ಯವನ್ನು ವಿವರಿಸಿ' },
     instructions: DESCRIBE_INSTRUCTIONS,
     rewardPaise: 1000,
     estMinutes: 4,

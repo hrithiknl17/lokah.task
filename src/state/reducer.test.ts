@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { getTask } from '../data/tasks';
 import type { AppState } from '../types';
 import { type Action, createInitialState, reducer } from './reducer';
 import { selectEarnings, selectLedger } from './selectors';
@@ -50,6 +51,19 @@ describe('submit', () => {
       type: 'SUBMIT',
       taskId: 'di-01',
       answer: { kind: 'describe_image', text: 'too short' },
+      at: T1,
+    });
+    expect(after).toBe(started);
+  });
+
+  it("rejects an image description copied from the image's alt text", () => {
+    const started = run([{ type: 'START_TASK', taskId: 'di-02', at: T0 }]);
+    const alt = getTask('di-02');
+    if (alt?.kind !== 'describe_image') throw new Error('di-02 should be an image task');
+    const after = reducer(started, {
+      type: 'SUBMIT',
+      taskId: 'di-02',
+      answer: { kind: 'describe_image', text: alt.imageAlt.en },
       at: T1,
     });
     expect(after).toBe(started);

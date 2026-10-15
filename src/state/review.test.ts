@@ -1,7 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { TASKS, getTask } from '../data/tasks';
 import type { DescribeImageTask, ListenAnswer, ListenVerifyTask } from '../types';
-import { DESCRIPTION_MAX, suggestReview, validateDescription } from './review';
+import {
+  DESCRIPTION_MAX,
+  isAnswerAcceptable,
+  suggestReview,
+  validateDescription,
+} from './review';
 
 const imageTask = getTask('di-01') as DescribeImageTask;
 
@@ -113,8 +118,66 @@ describe('validateDescription', () => {
     ).toBeNull();
   });
 
+  it('reports an instruction copy as "copied", even with alt text supplied', () => {
+    expect(validateDescription(instructions.en, instructions, imageTask.imageAlt)).toBe('copied');
+  });
+
   it('counts Kannada characters by code point', () => {
     const kannada = 'ಒಬ್ಬ ವ್ಯಕ್ತಿ ಟೊಮೇಟೊ ಮತ್ತು ಹಸಿರು ಮೆಣಸಿನಕಾಯಿ ತುಂಬಿದ ಗಾಡಿಯ ಹಿಂದೆ ನಿಂತಿದ್ದಾನೆ.';
     expect(validateDescription(kannada, instructions)).toBeNull();
+  });
+});
+
+describe('alt-text copy check', () => {
+  const street = getTask('di-02') as DescribeImageTask;
+  const check = (text: string, task: DescribeImageTask = street) =>
+    validateDescription(text, task.instructions, task.imageAlt);
+  const altEn = street.imageAlt.en;
+  const altKn = street.imageAlt.kn ?? '';
+
+  it.each(TASKS.filter((t): t is DescribeImageTask => t.kind === 'describe_image').flatMap((t) => [
+    [t.id, 'en', t.imageAlt.en, t] as const,
+    [t.id, 'kn', t.imageAlt.kn ?? '', t] as const,
+  ]))('%s: rejects its own %s alt text pasted as-is', (_id, _lang, alt, task) => {
+    expect(check(alt, task)).toBe('copied_alt');
+  });
+
+  it('rejects the alt text with changed case and punctuation', () => {
+    expect(check(altEn.toUpperCase().replace(/[,.-]/g, ' '))).toBe('copied_alt');
+  });
+
+  it('rejects the alt text with extra words of your own added', () => {
+    expect(check(`I can see this. ${altEn} It looks like evening.`)).toBe('copied_alt');
+  });
+
+  it('rejects part of the alt text', () => {
+    // Long enough to pass the length check, but entirely lifted from the alt text.
+    expect(check('A green and yellow auto-rickshaw drives down a tree-lined street')).toBe(
+      'copied_alt',
+    );
+  });
+
+  it('rejects lightly edited copies (one or two words swapped)', () => {
+    expect(check(altEn.replace('drives', 'moves'))).toBe('copied_alt');
+    expect(check(altEn.replace('drives', 'goes').replace('old', 'aging'))).toBe('copied_alt');
+    expect(check(altKn.replace('ಸಾಗುತ್ತಿದೆ', 'ಹೋಗುತ್ತಿದೆ'))).toBe('copied_alt');
+  });
+
+  it('accepts an honest description that shares a few words with the alt text', () => {
+    expect(
+      check('A green and yellow auto-rickshaw is on the road. Big trees and an old house are behind it.'),
+    ).toBeNull();
+    expect(
+      check('ಆಟೋರಿಕ್ಷಾ ರಸ್ತೆಯಲ್ಲಿ ಹೋಗುತ್ತಿದೆ. ಹಿಂದೆ ದೊಡ್ಡ ಮರಗಳು ಮತ್ತು ಒಂದು ಹಳೆಯ ಕಟ್ಟಡ ಕಾಣುತ್ತದೆ.'),
+    ).toBeNull();
+  });
+
+  it("only compares against this image's alt text", () => {
+    const market = getTask('di-01') as DescribeImageTask;
+    expect(check(market.imageAlt.en)).toBeNull();
+  });
+
+  it('blocks submission through isAnswerAcceptable', () => {
+    expect(isAnswerAcceptable(street, { kind: 'describe_image', text: altEn })).toBe(false);
   });
 });

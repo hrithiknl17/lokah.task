@@ -14,7 +14,10 @@ A mobile-first prototype of a platform where people complete small paid language
   - **Listen & Verify** — play a short clip and say whether the transcript matches. Kannada and
     English clips; one transcript (Kannada bus time) is deliberately wrong, so "Doesn't match" is
     the right answer.
-  - **Describe an Image** — write 40–500 characters in your own words.
+  - **Describe an Image** — write 40–500 characters in your own words. Pre-checks reject text
+    that copies the instructions or the image's alt text (pasted, or lightly edited), with a
+    plain-language reason. Passing the pre-checks only sends it to review; text is never
+    auto-approved.
 - **Clear rewards before you start** — every task card shows the reward, an estimated ₹/hour and
   the time it takes, all labelled "Demo data".
 - **Honest lifecycle** — Available → In progress → Submitted → Pending review → Approved or
@@ -103,6 +106,20 @@ ffmpeg -i assets-src/images/in2.jpg -map_metadata -1 -q:v 4 \
 (Source → task: `in2` → `di-01`, `in3` → `di-02`, `in1` → `di-03`.) Alt text for each image is in
 `src/data/tasks.ts`, in English and Kannada. Update it if an image changes.
 
+## Image credits
+
+Every image needs a licence that allows use in a public portfolio. Fill in each row before
+publishing.
+
+| File | Shows | Source (URL) | Author | Licence |
+| --- | --- | --- | --- | --- |
+| `public/images/di-01.jpg` | Vegetable market | TODO | TODO | TODO |
+| `public/images/di-02.jpg` | Street with auto-rickshaw | TODO | TODO | TODO |
+| `public/images/di-03.jpg` | Woman speaking into a phone | TODO | TODO | TODO |
+
+If you replace an image, rewrite its alt text (English and Kannada) in `src/data/tasks.ts` to
+match the new photo. The alt-text copy check uses that text too.
+
 ## How data is stored
 
 - Everything lives in the browser's `localStorage` under the key `lokah:v1`, with a
@@ -157,6 +174,12 @@ tests/e2e/        Playwright flow at 360px
 - **Offline queue with background sync** — so work done on patchy connections is not lost.
 
 ## Decisions made where the spec was open
+
+- **Alt-text copy check.** A description is rejected when it contains the image's alt text (or
+  is contained in it), or when 75% or more of its consecutive word pairs also appear in the alt
+  text (`ALT_OVERLAP_LIMIT` in `src/state/review.ts`). That catches pastes with a word or two
+  changed, while honest descriptions that reuse a few words ("green and yellow auto-rickshaw")
+  still pass. Both English and Kannada alt text are checked.
 
 - **First visit vs corrupt data.** A missing `lokah:v1` key is treated as a first visit (no
   notice). Only unreadable or invalid data shows the "started fresh" notice.

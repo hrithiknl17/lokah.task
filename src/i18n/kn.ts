@@ -74,6 +74,8 @@ export const kn: Partial<Dictionary> = {
   'describe.error.too_short': 'ತುಂಬಾ ಚಿಕ್ಕದು. ಕನಿಷ್ಠ {min} ಅಕ್ಷರ ಬರೆಯಿರಿ.',
   'describe.error.too_long': 'ತುಂಬಾ ಉದ್ದ. {max} ಅಕ್ಷರದೊಳಗೆ ಇರಿಸಿ.',
   'describe.error.copied': 'ಇದು ಸೂಚನೆಯನ್ನೇ ಪುನರಾವರ್ತಿಸುತ್ತದೆ. ನೀವು ನೋಡಿದ್ದನ್ನು ಬರೆಯಿರಿ.',
+  'describe.error.copied_alt':
+    'ಇದು ಚಿತ್ರದ ಜೊತೆಗಿರುವ ವಿವರಣೆಗೆ ತುಂಬಾ ಹತ್ತಿರವಿದೆ. ನೀವು ನೋಡಿದ್ದನ್ನು ನಿಮ್ಮದೇ ಮಾತಿನಲ್ಲಿ ಬರೆಯಿರಿ.',
 
   'answer.yours': 'ನಿಮ್ಮ ಉತ್ತರ',
 

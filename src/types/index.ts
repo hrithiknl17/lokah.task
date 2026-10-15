@@ -99,4 +99,4 @@ export type ReviewSuggestion =
   | { outcome: 'needs_revision'; reason: LocalText }
   | { outcome: 'manual'; reason: LocalText };
 
-export type DescriptionError = 'empty' | 'too_short' | 'too_long' | 'copied';
+export type DescriptionError = 'empty' | 'too_short' | 'too_long' | 'copied' | 'copied_alt';

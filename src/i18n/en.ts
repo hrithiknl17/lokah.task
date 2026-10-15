@@ -73,6 +73,8 @@ export const en = {
   'describe.error.too_short': 'Too short. Write at least {min} characters.',
   'describe.error.too_long': 'Too long. Keep it to {max} characters or fewer.',
   'describe.error.copied': 'This repeats the instructions. Describe what you see instead.',
+  'describe.error.copied_alt':
+    "This is too close to the image's built-in description. Describe what you see in your own words.",
 
   'answer.yours': 'Your answer',
 
