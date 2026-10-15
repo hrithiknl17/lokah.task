@@ -108,16 +108,14 @@ ffmpeg -i assets-src/images/in2.jpg -map_metadata -1 -q:v 4 \
 
 ## Image credits
 
-Every image needs a licence that allows use in a public portfolio. Fill in each row before
-publishing.
-
-| File | Shows | Source (URL) | Author | Licence |
+| File | Shows | Source | Author | Licence |
 | --- | --- | --- | --- | --- |
-| `public/images/di-01.jpg` | Vegetable market | TODO | TODO | TODO |
-| `public/images/di-02.jpg` | Street with auto-rickshaw | TODO | TODO | TODO |
-| `public/images/di-03.jpg` | Woman speaking into a phone | TODO | TODO | TODO |
+| `public/images/di-01.jpg` | Vegetable market | Own photo | Hrithik N L | All rights reserved; used with permission in this demo |
+| `public/images/di-02.jpg` | Street with auto-rickshaw | Own photo | Hrithik N L | All rights reserved; used with permission in this demo |
+| `public/images/di-03.jpg` | Woman speaking into a phone | Own photo | Hrithik N L | All rights reserved; used with permission in this demo |
 
-If you replace an image, rewrite its alt text (English and Kannada) in `src/data/tasks.ts` to
+The images are not covered by any licence that applies to the code. If you replace an image,
+add its credit here and rewrite its alt text (English and Kannada) in `src/data/tasks.ts` to
 match the new photo. The alt-text copy check uses that text too.
 
 ## How data is stored
